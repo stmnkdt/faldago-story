@@ -1,0 +1,89 @@
+{
+  "format": "faldago-story",
+  "version": 1,
+  "id": "sample",
+  "title": "名もなき魔獣シチュー",
+  "description": "サンプル。ウェインの謎肉シチューと、工房にこもるレオの話（選択肢2か所）",
+  "characters": [
+    { "id": "leo", "name": "レオ", "expressions": [
+      { "key": "normal", "label": "通常", "src": "images/chara/leo_normal.svg" },
+      { "key": "smile", "label": "笑顔", "src": "images/chara/leo_smile.svg" },
+      { "key": "angry", "label": "怒り", "src": "images/chara/leo_angry.svg" },
+      { "key": "trouble", "label": "困り", "src": "images/chara/leo_trouble.svg" },
+      { "key": "surprise", "label": "驚き", "src": "images/chara/leo_surprise.svg" } ] },
+    { "id": "tierra", "name": "ティエラ", "expressions": [
+      { "key": "normal", "label": "通常", "src": "images/chara/tierra_normal.svg" },
+      { "key": "smile", "label": "笑顔", "src": "images/chara/tierra_smile.svg" },
+      { "key": "angry", "label": "怒り", "src": "images/chara/tierra_angry.svg" },
+      { "key": "trouble", "label": "困り", "src": "images/chara/tierra_trouble.svg" },
+      { "key": "surprise", "label": "驚き", "src": "images/chara/tierra_surprise.svg" } ] },
+    { "id": "wayne", "name": "ウェイン", "expressions": [
+      { "key": "normal", "label": "通常", "src": "images/chara/wayne_normal.svg" },
+      { "key": "smile", "label": "笑顔", "src": "images/chara/wayne_smile.svg" },
+      { "key": "angry", "label": "怒り", "src": "images/chara/wayne_angry.svg" },
+      { "key": "trouble", "label": "困り", "src": "images/chara/wayne_trouble.svg" },
+      { "key": "surprise", "label": "驚き", "src": "images/chara/wayne_surprise.svg" } ] },
+    { "id": "romdo", "name": "ロムド", "expressions": [
+      { "key": "normal", "label": "通常", "src": "images/chara/romdo_normal.svg" },
+      { "key": "smile", "label": "笑顔", "src": "images/chara/romdo_smile.svg" },
+      { "key": "angry", "label": "怒り", "src": "images/chara/romdo_angry.svg" },
+      { "key": "trouble", "label": "困り", "src": "images/chara/romdo_trouble.svg" },
+      { "key": "surprise", "label": "驚き", "src": "images/chara/romdo_surprise.svg" } ] }
+  ],
+  "backgrounds": [
+    { "id": "lounge", "name": "共用スペース", "src": "images/bg/lounge.svg" },
+    { "id": "workshop", "name": "レオの工房", "src": "images/bg/workshop.svg" },
+    { "id": "beach_evening", "name": "夕方の海辺", "src": "images/bg/beach_evening.svg" },
+    { "id": "ruins", "name": "遺跡島", "src": "images/bg/ruins.svg" }
+  ],
+  "steps": [
+    { "type": "bg", "bg": "lounge" },
+    { "type": "narration", "text": "昼下がり。いつもの共用スペースに、香ばしい匂いが漂っている。" },
+    { "type": "say", "who": "wayne", "expr": "smile", "pos": "right", "effect": "jump", "text": "お待たせ〜！今日のお昼は俺の特製シチューだよ" },
+    { "type": "say", "who": "tierra", "expr": "surprise", "pos": "left", "text": "わあ、いい匂い！……ねえウェイン、このお肉なに？" },
+    { "type": "say", "who": "wayne", "expr": "normal", "pos": "right", "text": "遺跡島で獲れたトゲトゲした魔獣の肩ロース。まだ名前が付いてないやつだよ" },
+    { "type": "say", "who": "tierra", "expr": "trouble", "pos": "left", "text": "名前がないの……？" },
+    { "type": "choice", "options": [
+      { "text": "せっかくだし食べてみる！", "goto": "eat" },
+      { "text": "ちょっと様子を見る……", "goto": "wait" } ] },
+
+    { "type": "label", "name": "eat" },
+    { "type": "say", "who": "tierra", "expr": "smile", "pos": "left", "text": "……ん！おいしい！見た目より全然やわらかいね" },
+    { "type": "say", "who": "wayne", "expr": "smile", "pos": "right", "effect": "jump", "text": "でしょ？下ごしらえに三日かけたんだよ" },
+    { "type": "goto", "label": "after_lunch" },
+
+    { "type": "label", "name": "wait" },
+    { "type": "say", "who": "tierra", "expr": "trouble", "pos": "left", "text": "うーん、先に誰かが食べるのを見てからにしようかな" },
+    { "type": "say", "who": "romdo", "expr": "angry", "pos": "right", "effect": "shake", "text": "おい、ウェイン。また得体の知れねえモン煮込んでんのか" },
+    { "type": "say", "who": "romdo", "expr": "normal", "pos": "right", "text": "……チッ、うまいじゃねえか。ティエラ、毒見は済んだぞ。食っとけ" },
+    { "type": "say", "who": "tierra", "expr": "smile", "pos": "left", "text": "ありがとう、ロムド！じゃあ、いただきます" },
+
+    { "type": "label", "name": "after_lunch" },
+    { "type": "say", "who": "tierra", "expr": "normal", "pos": "left", "text": "そういえば、レオは？朝から見てないね" },
+    { "type": "say", "who": "romdo", "expr": "normal", "pos": "right", "text": "工房にこもりっぱなしだ。どうせまた飯も食ってねえんだろ" },
+
+    { "type": "bg", "bg": "workshop", "clear": true },
+    { "type": "narration", "text": "工房の扉を開けると、床一面に図面と部品が散らばっていた。" },
+    { "type": "say", "who": "leo", "expr": "surprise", "pos": "right", "effect": "shake", "text": "うおっ!?　なんだ、みんなして" },
+    { "type": "say", "who": "tierra", "expr": "normal", "pos": "left", "text": "レオ、お昼食べた？" },
+    { "type": "say", "who": "leo", "expr": "trouble", "pos": "right", "text": "昼……？　あー……今何時だ？" },
+    { "type": "say", "who": "leo", "expr": "smile", "pos": "right", "effect": "jump", "text": "でもほら見ろよ、相棒の加速装置、出力二割アップだ！すげーだろ！" },
+    { "type": "choice", "options": [
+      { "text": "すごい！どういう仕組み？", "goto": "praise" },
+      { "text": "その前にご飯！", "goto": "meal" } ] },
+
+    { "type": "label", "name": "praise" },
+    { "type": "say", "who": "leo", "expr": "smile", "pos": "right", "text": "お、聞きたい？　魔導回路の配列を変えて、出力を後ろに集中させて、それから……" },
+    { "type": "say", "who": "tierra", "expr": "trouble", "pos": "left", "text": "……これ、長くなるやつだね" },
+    { "type": "goto", "label": "ending" },
+
+    { "type": "label", "name": "meal" },
+    { "type": "say", "who": "tierra", "expr": "angry", "pos": "left", "effect": "shake", "text": "その前にご飯！ウェインのシチュー、ちゃんと取っておいたんだから" },
+    { "type": "say", "who": "leo", "expr": "trouble", "pos": "right", "text": "お、おう……わかった、食う食う" },
+
+    { "type": "label", "name": "ending" },
+    { "type": "bg", "bg": "beach_evening", "clear": true },
+    { "type": "narration", "text": "夕暮れ。結局その日も、四人はいつものように同じ鍋を囲んだのだった。" },
+    { "type": "end" }
+  ]
+}
