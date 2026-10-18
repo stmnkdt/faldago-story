@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>シナリオエディタ｜ファルダゴ ストーリー</title>
+<style>
+:root{--bg:#fbf1ec;--card:#fff;--ink:#2f2e2c;--sub:#7a7874;--line:#dddbd5;--acc:#2b7f7e;--yel:#FFB6B9;--warn:#c0392b;
+  --say:#4BBCF4;--narr:#8a8a8a;--choice:#d68a2f;--bgc:#61C0BF;--label:#8a5bd6;--goto:#8a5bd6;--hide:#a0a0a0;--end:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;
+  padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:10;background:var(--acc);color:#fff;padding:10px 12px calc(0px) ;padding-top:calc(10px + env(safe-area-inset-top))}
+header .top{display:flex;align-items:center;gap:8px}
+header h1{font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header a{color:var(--yel);font-size:12px;text-decoration:none}
+.tabs{display:flex;margin-top:8px}
+.tabs button{flex:1;background:none;border:none;color:#bbb;padding:9px 0 10px;border-bottom:3px solid transparent;font-weight:700}
+.tabs button.on{color:#fff;border-color:var(--yel)}
+main{max-width:720px;margin:0 auto;padding:12px}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.card .head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.no{font-size:11px;color:var(--sub);min-width:22px}
+.badge{font-size:11px;font-weight:700;color:#fff;padding:2px 8px;border-radius:999px;background:#888}
+.t-say .badge{background:var(--say)}.t-narration .badge{background:var(--narr)}.t-choice .badge{background:var(--choice)}
+.t-bg .badge{background:var(--bgc)}.t-label .badge{background:var(--label)}.t-goto .badge{background:var(--goto)}
+.t-show .badge{background:var(--say)}.t-hide .badge{background:var(--hide)}.t-end .badge{background:var(--end)}
+.t-label{border-left:4px solid var(--label)}
+.sp{flex:1}
+.ib{border:1px solid var(--line);background:#fafaf8;border-radius:8px;min-width:32px;height:30px;padding:0 6px;font-size:13px}
+.ib:active{background:#eee}
+.ib.del{color:var(--warn)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.row label{font-size:11px;color:var(--sub);display:flex;flex-direction:column;gap:2px;flex:1;min-width:90px}
+input[type=text],select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px;background:#fff;font-size:15px}
+textarea{min-height:64px;resize:vertical;line-height:1.6}
+.thumb{width:46px;height:62px;object-fit:contain;object-position:bottom;background:#eceae4;border-radius:6px;flex:none}
+.thumb.bgt{width:62px;height:46px;object-fit:cover}
+.say-grid{display:flex;gap:8px}
+.say-grid .fields{flex:1;min-width:0}
+.opt{display:flex;gap:6px;align-items:flex-end;margin-bottom:6px}
+.opt input{flex:2}.opt select{flex:1.2}
+.addhere{margin-top:6px;font-size:12px;color:var(--sub);background:#fafaf8;padding:5px}
+.warns{background:#fff3f0;border:1px solid #f0c2b8;color:var(--warn);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px;line-height:1.7}
+.ok{background:#eef8ef;border:1px solid #bfe2c3;color:#2e7d3a;border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:12px}
+.btn{border:none;border-radius:10px;padding:10px 14px;font-weight:700;background:var(--acc);color:#fff}
+.btn.lt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.yel{background:var(--yel);color:#4a2628}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 12px}
+.adds{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.adds button{border:1px dashed #b9b6ae;background:#fff;border-radius:999px;padding:6px 12px;font-size:13px}
+h2{font-size:14px;margin:6px 0 8px}
+.hint{font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:10px}
+.exrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.exrow input{min-width:0}
+.exrow .k{flex:1}.exrow .l{flex:1}.exrow .del{order:4}
+.exrow .s{order:5;flex:1 1 100%;font-size:13px;padding:6px 8px;color:#555}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(255,255,255,.96);border-top:1px solid var(--line);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));display:flex;gap:8px;justify-content:center}
+.foot .btn{flex:1;max-width:180px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;padding:9px 14px;border-radius:10px;font-size:13px;display:none;z-index:20;max-width:90%}
+</style>
+</head>
+<body>
+<header>
+  <div class="top"><h1 id="hTitle">シナリオエディタ</h1><a href="index.html">再生画面へ ›</a></div>
+  <div class="tabs">
+    <button data-tab="steps" class="on">シナリオ</button>
+    <button data-tab="chars">キャラ</button>
+    <button data-tab="bgs">背景</button>
+    <button data-tab="meta">ファイル</button>
+  </div>
+</header>
+
+<main>
+  <section class="sec on" id="sec-steps">
+    <div id="warns"></div>
+    <div id="steps"></div>
+    <div class="hint">末尾に追加：</div>
+    <div class="adds" id="addsEnd"></div>
+  </section>
+
+  <section class="sec" id="sec-chars">
+    <p class="hint">立ち絵は <b>images/chara/</b> フォルダに置き、ここでファイル名を指定します。<br>
+      「命名ルールで一括設定」を押すと <b>images/chara/ID_表情キー.拡張子</b>（例：leo_smile.png）で全表情のパスを埋めます。</p>
+    <div id="chars"></div>
+    <button class="btn lt" id="addChar">＋ キャラを追加</button>
+  </section>
+
+  <section class="sec" id="sec-bgs">
+    <p class="hint">背景は <b>images/bg/</b> フォルダに置き、ここでファイル名を指定します。縦長（9:16前後）の画像がおすすめです。</p>
+    <div id="bgs"></div>
+    <button class="btn lt" id="addBg">＋ 背景を追加</button>
+  </section>
+
+  <section class="sec" id="sec-meta">
+    <div class="card">
+      <div class="row"><label>タイトル<input type="text" id="mTitle"></label></div>
+      <div class="row"><label>説明（タイトル画面に表示）<input type="text" id="mDesc"></label></div>
+      <div class="row"><label>ファイル名（英数字。書き出し時の名前になります）<input type="text" id="mId" placeholder="例：chapter1"></label></div>
+    </div>
+    <h2>読み込み・書き出し</h2>
+    <div class="btns">
+      <button class="btn" id="bExport">JSONを書き出す</button>
+      <button class="btn lt" id="bCopy">JSONをコピー</button>
+      <button class="btn lt" id="bImport">JSONを読み込む</button>
+    </div>
+    <div class="btns">
+      <button class="btn lt" id="bSample">サンプルを読み込む</button>
+      <button class="btn lt" id="bNew">新規作成</button>
+    </div>
+    <p class="hint">編集内容はこの端末に自動で下書き保存されます（別の端末には引き継がれません）。<br>
+      完成したら「JSONを書き出す」で保存し、<b>scenarios/</b> フォルダに置いて <b>scenarios/index.json</b> にファイル名を追記すると、再生画面の一覧に出ます。</p>
+    <input type="file" id="file" accept=".json,application/json" hidden>
+  </section>
+</main>
+
+<div class="foot">
+  <button class="btn yel" id="bPlay">▶ テストプレイ</button>
+  <button class="btn lt" id="bExport2">書き出し</button>
+</div>
+<div id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+const LS = 'fstory_';
+const FORMAT = 'faldago-story';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const TYPES = {
+  say:       'セリフ',
+  narration: 'ナレーション',
+  choice:    '選択肢',
+  bg:        '背景',
+  label:     'ラベル',
+  goto:      'ジャンプ',
+  show:      '登場',
+  hide:      '退場',
+  end:       '終了'
+};
+const EFFECTS = { none: 'なし', jump: 'ぴょん', shake: 'ぶるっ' };
+const DEFAULT_EX = [['normal','通常'],['smile','笑顔'],['angry','怒り'],['trouble','困り'],['surprise','驚き']];
+
+function blankStep(type){
+  switch (type){
+    case 'say': return { type, who: (D.characters[0]||{}).id || '', expr: 'normal', pos: 'left', effect: 'none', text: '' };
+    case 'narration': return { type, text: '' };
+    case 'choice': return { type, options: [{ text: '', goto: '' }, { text: '', goto: '' }] };
+    case 'bg': return { type, bg: (D.backgrounds[0]||{}).id || '', clear: false };
+    case 'label': return { type, name: 'label' + (D.steps.filter(s => s.type === 'label').length + 1) };
+    case 'goto': return { type, label: '' };
+    case 'show': return { type, who: (D.characters[0]||{}).id || '', expr: 'normal', pos: 'left' };
+    case 'hide': return { type, pos: 'both' };
+    default: return { type };
+  }
+}
+function defaultChar(id, name){
+  return { id, name, expressions: DEFAULT_EX.map(([k, l]) => ({ key: k, label: l, src: `images/chara/${id}_${k}.svg` })) };
+}
+function newScenario(){
+  return {
+    format: FORMAT, version: 1, id: 'new_story', title: '新しいシナリオ', description: '',
+    characters: [defaultChar('leo','レオ'), defaultChar('tierra','ティエラ'), defaultChar('wayne','ウェイン'), defaultChar('romdo','ロムド')],
+    backgrounds: [
+      { id: 'lounge', name: '共用スペース', src: 'images/bg/lounge.svg' },
+      { id: 'workshop', name: 'レオの工房', src: 'images/bg/workshop.svg' },
+      { id: 'beach_evening', name: '夕方の海辺', src: 'images/bg/beach_evening.svg' },
+      { id: 'ruins', name: '遺跡島', src: 'images/bg/ruins.svg' }
+    ],
+    steps: [ { type: 'bg', bg: 'lounge', clear: false }, { type: 'say', who: 'tierra', expr: 'normal', pos: 'left', effect: 'none', text: '' }, { type: 'end' } ]
+  };
+}
+
+let D;
+try { D = JSON.parse(localStorage.getItem(LS + 'editor')); } catch(e){ D = null; }
+if (!D || D.format !== FORMAT) D = newScenario();
+
+let saveT;
+function save(){
+  clearTimeout(saveT);
+  saveT = setTimeout(() => { try { localStorage.setItem(LS + 'editor', JSON.stringify(D)); } catch(e){ toast('保存できませんでした（容量不足の可能性）'); } }, 300);
+  $('#hTitle').textContent = D.title || 'シナリオエディタ';
+}
+function toast(m){ const t = $('#toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(toast.t); toast.t = setTimeout(() => t.style.display = 'none', 2200); }
+
+/* ---------- 共通 ---------- */
+const charById = id => D.characters.find(c => c.id === id);
+const exprSrc = (who, ex) => { const c = charById(who); const e = c && (c.expressions.find(x => x.key === ex) || c.expressions[0]); return e ? e.src : ''; };
+const labelNames = () => D.steps.filter(s => s.type === 'label' && s.name).map(s => s.name);
+function opts(list, cur, empty){
+  let h = empty ? `<option value="">${esc(empty)}</option>` : '';
+  list.forEach(([v, t]) => h += `<option value="${esc(v)}"${v === cur ? ' selected' : ''}>${esc(t)}</option>`);
+  if (cur && !list.some(([v]) => v === cur)) h += `<option value="${esc(cur)}" selected>⚠ ${esc(cur)}（見つかりません）</option>`;
+  return h;
+}
+const charOpts = cur => opts(D.characters.map(c => [c.id, c.name || c.id]), cur, '— キャラ —');
+const exprOpts = (who, cur) => { const c = charById(who); return opts(c ? c.expressions.map(e => [e.key, e.label || e.key]) : [], cur); };
+const bgOpts = cur => opts(D.backgrounds.map(b => [b.id, b.name || b.id]), cur, '— 背景 —');
+const labelOpts = cur => opts(labelNames().map(n => [n, n]), cur, '— ジャンプ先 —');
+const posOpts = (cur, both) => opts([['left','左'],['right','右']].concat(both ? [['both','両方']] : []), cur);
+const addSelect = i => `<select class="addhere" data-add="${i}"><option value="">＋ この下に追加…</option>${Object.entries(TYPES).map(([k,v]) => `<option value="${k}">${v}</option>`).join('')}</select>`;
+
+/* ---------- シナリオタブ ---------- */
+function stepBody(s, i){
+  const f = (field, val, ph = '') => `<input type="text" data-i="${i}" data-f="${field}" value="${esc(val)}" placeholder="${esc(ph)}">`;
+  switch (s.type){
+    case 'say': case 'show': return `
+      <div class="say-grid">
+        <img class="thumb" src="${esc(exprSrc(s.who, s.expr))}" alt="" onerror="this.style.visibility='hidden'">
+        <div class="fields">
+          <div class="row">
+            <label>キャラ<select data-i="${i}" data-f="who" data-re="1">${charOpts(s.who)}</select></label>
+            <label>表情<select data-i="${i}" data-f="expr" data-re="1">${exprOpts(s.who, s.expr)}</select></label>
+          </div>
+          <div class="row">
+            <label>位置<select data-i="${i}" data-f="pos">${posOpts(s.pos)}</select></label>
+            ${s.type === 'say' ? `<label>動き<select data-i="${i}" data-f="effect">${opts(Object.entries(EFFECTS), s.effect || 'none')}</select></label>` : ''}
+          </div>
+        </div>
+      </div>
+      ${s.type === 'say' ? `<textarea data-i="${i}" data-f="text" placeholder="セリフ（改行もそのまま表示されます）">${esc(s.text)}</textarea>
+      <div class="row" style="margin-top:6px"><label>表示名を変える（空欄ならキャラ名）${f('name', s.name, '例：？？？')}</label></div>` : ''}`;
+    case 'narration': return `<textarea data-i="${i}" data-f="text" placeholder="地の文（名前なしで表示）">${esc(s.text)}</textarea>`;
+    case 'choice': return (s.options || []).map((o, k) => `
+      <div class="opt">
+        <label style="flex:2;font-size:11px;color:var(--sub);display:flex;flex-direction:column;gap:2px">選択肢${k+1}<input type="text" data-i="${i}" data-o="${k}" data-f="text" value="${esc(o.text)}"></label>
+        <label style="flex:1.3;font-size:11px;color:var(--sub);display:flex;flex-direction:column;gap:2px">→ ジャンプ先<select data-i="${i}" data-o="${k}" data-f="goto">${labelOpts(o.goto)}</select></label>
+        <button class="ib del" data-act="optdel" data-i="${i}" data-o="${k}" title="削除">✕</button>
+      </div>`).join('') + ((s.options || []).length < 4 ? `<button class="ib" data-act="optadd" data-i="${i}">＋ 選択肢を追加</button>` : '');
+    case 'bg': {
+      const b = D.backgrounds.find(x => x.id === s.bg);
+      return `<div class="say-grid"><img class="thumb bgt" src="${esc(b ? b.src : '')}" alt="" onerror="this.style.visibility='hidden'">
+        <div class="fields"><div class="row"><label>背景<select data-i="${i}" data-f="bg" data-re="1">${bgOpts(s.bg)}</select></label></div>
+        <label style="font-size:12px;display:flex;gap:6px;align-items:center"><input type="checkbox" data-i="${i}" data-f="clear" ${s.clear ? 'checked' : ''}> 立ち絵をすべて下げる（場面転換）</label></div></div>`;
+    }
+    case 'label': return `<div class="row"><label>ラベル名（ジャンプ先の目印。英数字がおすすめ）${f('name', s.name)}</label></div>`;
+    case 'goto': return `<div class="row"><label>ジャンプ先<select data-i="${i}" data-f="label">${labelOpts(s.label)}</select></label></div>`;
+    case 'hide': return `<div class="row"><label>どちらを下げる<select data-i="${i}" data-f="pos">${posOpts(s.pos, true)}</select></label></div>`;
+    case 'end': return `<p class="hint" style="margin:0">ここでシナリオが終わります。</p>`;
+  }
+  return '';
+}
+
+function renderSteps(){
+  const box = $('#steps');
+  box.innerHTML = D.steps.map((s, i) => `
+    <div class="card t-${s.type}" id="st${i}">
+      <div class="head">
+        <span class="no">${i + 1}</span><span class="badge">${TYPES[s.type] || s.type}</span><span class="sp"></span>
+        <button class="ib" data-act="play" data-i="${i}" title="ここから再生">▶</button>
+        <button class="ib" data-act="up" data-i="${i}">↑</button>
+        <button class="ib" data-act="down" data-i="${i}">↓</button>
+        <button class="ib" data-act="dup" data-i="${i}" title="複製">⧉</button>
+        <button class="ib del" data-act="del" data-i="${i}" title="削除">✕</button>
+      </div>
+      ${stepBody(s, i)}
+      ${addSelect(i)}
+    </div>`).join('');
+  $('#addsEnd').innerHTML = Object.entries(TYPES).map(([k, v]) => `<button data-addend="${k}">＋${v}</button>`).join('');
+  renderWarns();
+}
+
+function check(){
+  const w = [], names = {};
+  const ln = new Set(labelNames());
+  D.steps.forEach((s, i) => {
+    const n = i + 1;
+    if (s.type === 'label'){ if (!s.name) w.push(`${n}: ラベル名が空です`); else if (names[s.name]) w.push(`${n}: ラベル「${s.name}」が重複しています`); names[s.name] = 1; }
+    if (s.type === 'goto' && !ln.has(s.label)) w.push(`${n}: ジャンプ先が未設定か、見つかりません`);
+    if (s.type === 'choice'){
+      const o = (s.options || []).filter(x => x.text);
+      if (o.length < 1) w.push(`${n}: 選択肢の文が空です`);
+      (s.options || []).forEach((x, k) => { if (x.text && !ln.has(x.goto)) w.push(`${n}: 選択肢${k+1}のジャンプ先が未設定か、見つかりません`); });
+    }
+    if ((s.type === 'say' || s.type === 'show')){
+      const c = charById(s.who);
+      if (!c) w.push(`${n}: キャラが未設定か、見つかりません`);
+      else if (!c.expressions.some(e => e.key === s.expr)) w.push(`${n}: ${c.name}に表情「${s.expr}」がありません`);
+    }
+    if (s.type === 'bg' && !D.backgrounds.some(b => b.id === s.bg)) w.push(`${n}: 背景が未設定か、見つかりません`);
+  });
+  return w;
+}
+function renderWarns(){
+  const w = check();
+  $('#warns').innerHTML = w.length ? `<div class="warns"><b>確認が必要な箇所（${w.length}）</b><br>${w.map(esc).join('<br>')}</div>`
+                                   : `<div class="ok">✓ ジャンプ先・キャラ・背景の設定はすべてOKです</div>`;
+}
+
+$('#steps').addEventListener('input', ev => {
+  const t = ev.target, i = +t.dataset.i, f = t.dataset.f;
+  if (isNaN(i) || !f) return;
+  const v = t.type === 'checkbox' ? t.checked : t.value;
+  if (t.dataset.o !== undefined) D.steps[i].options[+t.dataset.o][f] = v;
+  else {
+    D.steps[i][f] = v;
+    if (f === 'who'){ const c = charById(v); if (c && !c.expressions.some(e => e.key === D.steps[i].expr)) D.steps[i].expr = (c.expressions[0]||{}).key || 'normal'; }
+  }
+  save();
+  if (t.tagName === 'SELECT' || t.type === 'checkbox'){
+    if (t.dataset.re || f === 'name'){ const y = scrollY; renderSteps(); scrollTo(0, y); } else renderWarns();
+  } else if (f === 'name' && D.steps[i].type === 'label'){ renderWarns(); }
+});
+$('#steps').addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.dataset.add !== undefined && t.value){
+    const i = +t.dataset.add; D.steps.splice(i + 1, 0, blankStep(t.value)); save(); renderSteps();
+    const el = document.getElementById('st' + (i + 1)); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else if (t.tagName === 'INPUT' && t.type === 'text' && D.steps[+t.dataset.i] && D.steps[+t.dataset.i].type === 'label'){
+    const y = scrollY; renderSteps(); scrollTo(0, y); // ラベル名確定でジャンプ先の候補を更新
+  }
+});
+$('#steps').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-act]'); if (!b) return;
+  const i = +b.dataset.i, a = b.dataset.act, y = scrollY;
+  if (a === 'play') return play(i);
+  if (a === 'up' && i > 0) [D.steps[i-1], D.steps[i]] = [D.steps[i], D.steps[i-1]];
+  else if (a === 'down' && i < D.steps.length - 1) [D.steps[i+1], D.steps[i]] = [D.steps[i], D.steps[i+1]];
+  else if (a === 'dup') D.steps.splice(i + 1, 0, JSON.parse(JSON.stringify(D.steps[i])));
+  else if (a === 'del'){ if (!confirm(`${i+1}番「${TYPES[D.steps[i].type]}」を削除しますか？`)) return; D.steps.splice(i, 1); }
+  else if (a === 'optadd') D.steps[i].options.push({ text: '', goto: '' });
+  else if (a === 'optdel') D.steps[i].options.splice(+b.dataset.o, 1);
+  else return;
+  save(); renderSteps(); scrollTo(0, y);
+});
+$('#addsEnd').addEventListener('click', ev => {
+  const t = ev.target.dataset.addend; if (!t) return;
+  const endIdx = D.steps.length && D.steps[D.steps.length - 1].type === 'end' ? D.steps.length - 1 : D.steps.length;
+  D.steps.splice(endIdx, 0, blankStep(t)); save(); renderSteps();
+  const el = document.getElementById('st' + endIdx); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+});
+
+/* ---------- キャラタブ ---------- */
+function renderChars(){
+  $('#chars').innerHTML = D.characters.map((c, ci) => `
+    <div class="card">
+      <div class="row">
+        <label>表示名<input type="text" data-c="${ci}" data-f="name" value="${esc(c.name)}"></label>
+        <label>ID（英数字）<input type="text" data-c="${ci}" data-f="id" value="${esc(c.id)}"></label>
+        <button class="ib del" data-cact="del" data-c="${ci}" style="align-self:flex-end">✕</button>
+      </div>
+      <div class="hint" style="margin:4px 0">表情（キー／名前／画像パス）</div>
+      ${c.expressions.map((e, ei) => `
+        <div class="exrow">
+          <img class="thumb" src="${esc(e.src)}" alt="" onerror="this.style.visibility='hidden'" style="width:34px;height:46px">
+          <input class="k" type="text" data-c="${ci}" data-e="${ei}" data-f="key" value="${esc(e.key)}">
+          <input class="l" type="text" data-c="${ci}" data-e="${ei}" data-f="label" value="${esc(e.label)}">
+          <input class="s" type="text" data-c="${ci}" data-e="${ei}" data-f="src" value="${esc(e.src)}">
+          <button class="ib del" data-cact="exdel" data-c="${ci}" data-e="${ei}">✕</button>
+        </div>`).join('')}
+      <div class="btns" style="margin-bottom:0">
+        <button class="ib" data-cact="exadd" data-c="${ci}">＋ 表情を追加</button>
+        <select class="ib" data-cext="${ci}" style="width:auto"><option>png</option><option>webp</option><option>jpg</option><option>svg</option></select>
+        <button class="ib" data-cact="bulk" data-c="${ci}">命名ルールで一括設定</button>
+      </div>
+    </div>`).join('');
+}
+$('#chars').addEventListener('input', ev => {
+  const t = ev.target, ci = +t.dataset.c, f = t.dataset.f; if (isNaN(ci) || !f) return;
+  const c = D.characters[ci];
+  if (t.dataset.e !== undefined) c.expressions[+t.dataset.e][f] = t.value;
+  else c[f] = t.value;
+  save();
+});
+$('#chars').addEventListener('change', ev => {
+  const t = ev.target, ci = +t.dataset.c, f = t.dataset.f; if (isNaN(ci) || !f) return;
+  if (f === 'src') { const img = t.parentElement.querySelector('img'); img.style.visibility = ''; img.src = t.value; }
+  save();
+});
+$('#chars').addEventListener('focusin', ev => { const t = ev.target; if (t.dataset.f === 'id' || t.dataset.f === 'key') t.dataset.old = t.value; });
+$('#chars').addEventListener('focusout', ev => {
+  const t = ev.target, ci = +t.dataset.c; if (isNaN(ci)) return;
+  const old = t.dataset.old; if (old === undefined || old === t.value) return;
+  const c = D.characters[ci];
+  if (t.dataset.f === 'id'){
+    D.steps.forEach(s => { if (s.who === old) s.who = t.value; });
+  } else if (t.dataset.f === 'key'){
+    D.steps.forEach(s => { if (s.who === c.id && s.expr === old) s.expr = t.value; });
+  }
+  delete t.dataset.old; save(); renderSteps();
+});
+$('#chars').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-cact]'); if (!b) return;
+  const ci = +b.dataset.c, c = D.characters[ci], a = b.dataset.cact;
+  if (a === 'del'){ if (!confirm(`キャラ「${c.name}」を削除しますか？`)) return; D.characters.splice(ci, 1); }
+  else if (a === 'exadd') c.expressions.push({ key: 'new' + c.expressions.length, label: '新表情', src: `images/chara/${c.id}_new${c.expressions.length}.png` });
+  else if (a === 'exdel'){ if (c.expressions.length <= 1) return toast('表情は最低1つ必要です'); c.expressions.splice(+b.dataset.e, 1); }
+  else if (a === 'bulk'){
+    const ext = document.querySelector(`[data-cext="${ci}"]`).value;
+    if (!confirm(`${c.name}の全表情を images/chara/${c.id}_表情キー.${ext} に設定しますか？`)) return;
+    c.expressions.forEach(e => e.src = `images/chara/${c.id}_${e.key}.${ext}`);
+  }
+  save(); renderChars(); renderSteps();
+});
+$('#addChar').onclick = () => { const id = 'chara' + (D.characters.length + 1); D.characters.push(defaultChar(id, '新キャラ')); D.characters.at(-1).expressions.forEach(e => e.src = e.src.replace('.svg', '.png')); save(); renderChars(); renderSteps(); };
+
+/* ---------- 背景タブ ---------- */
+function renderBgs(){
+  $('#bgs').innerHTML = D.backgrounds.map((b, bi) => `
+    <div class="card"><div class="say-grid">
+      <img class="thumb bgt" src="${esc(b.src)}" alt="" onerror="this.style.visibility='hidden'" style="width:62px;height:96px">
+      <div class="fields">
+        <div class="row"><label>名前<input type="text" data-b="${bi}" data-f="name" value="${esc(b.name)}"></label>
+          <label>ID（英数字）<input type="text" data-b="${bi}" data-f="id" value="${esc(b.id)}"></label></div>
+        <div class="row"><label>画像パス<input type="text" data-b="${bi}" data-f="src" value="${esc(b.src)}"></label>
+          <button class="ib del" data-bact="del" data-b="${bi}" style="align-self:flex-end">✕</button></div>
+      </div></div></div>`).join('');
+}
+$('#bgs').addEventListener('focusin', ev => { if (ev.target.dataset.f === 'id') ev.target.dataset.old = ev.target.value; });
+$('#bgs').addEventListener('input', ev => { const t = ev.target, bi = +t.dataset.b; if (isNaN(bi)) return; D.backgrounds[bi][t.dataset.f] = t.value; save(); });
+$('#bgs').addEventListener('focusout', ev => {
+  const t = ev.target, bi = +t.dataset.b; if (isNaN(bi)) return;
+  if (t.dataset.f === 'id' && t.dataset.old !== undefined && t.dataset.old !== t.value){ D.steps.forEach(s => { if (s.type === 'bg' && s.bg === t.dataset.old) s.bg = t.value; }); save(); }
+  delete t.dataset.old;
+  if (t.dataset.f === 'src'){ const img = t.closest('.card').querySelector('img'); img.style.visibility = ''; img.src = t.value; }
+  renderSteps();
+});
+$('#bgs').addEventListener('click', ev => {
+  const b = ev.target.closest('[data-bact]'); if (!b) return;
+  const bi = +b.dataset.b; if (!confirm(`背景「${D.backgrounds[bi].name}」を削除しますか？`)) return;
+  D.backgrounds.splice(bi, 1); save(); renderBgs(); renderSteps();
+});
+$('#addBg').onclick = () => { D.backgrounds.push({ id: 'bg' + (D.backgrounds.length + 1), name: '新しい背景', src: 'images/bg/' }); save(); renderBgs(); };
+
+/* ---------- ファイルタブ ---------- */
+function renderMeta(){ $('#mTitle').value = D.title || ''; $('#mDesc').value = D.description || ''; $('#mId').value = D.id || ''; }
+$('#mTitle').oninput = e => { D.title = e.target.value; save(); };
+$('#mDesc').oninput = e => { D.description = e.target.value; save(); };
+$('#mId').oninput = e => { D.id = e.target.value.replace(/[^\w\-]/g, ''); save(); };
+
+function json(){ return JSON.stringify(D, null, 2); }
+function exportJSON(){
+  const w = check();
+  if (w.length && !confirm(`確認が必要な箇所が${w.length}件あります。このまま書き出しますか？`)) return;
+  const blob = new Blob([json()], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = (D.id || 'scenario') + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast(`${a.download} を書き出しました`);
+}
+$('#bExport').onclick = exportJSON; $('#bExport2').onclick = exportJSON;
+$('#bCopy').onclick = async () => { try { await navigator.clipboard.writeText(json()); toast('コピーしました'); } catch(e){ toast('コピーできませんでした'); } };
+$('#bImport').onclick = () => $('#file').click();
+$('#file').onchange = ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try {
+      const d = JSON.parse(rd.result);
+      if (d.format !== FORMAT || !Array.isArray(d.steps)) throw new Error('形式が違います');
+      if (!confirm('今の編集内容を読み込んだファイルで置き換えますか？')) return;
+      D = d; save(); renderAll(); toast('読み込みました');
+    } catch(e){ toast('読み込めませんでした：' + e.message); }
+    ev.target.value = '';
+  };
+  rd.readAsText(f);
+};
+$('#bSample').onclick = async () => {
+  if (!confirm('今の編集内容をサンプルで置き換えますか？')) return;
+  try { const r = await fetch('scenarios/sample.json', { cache: 'no-cache' }); D = await r.json(); save(); renderAll(); toast('サンプルを読み込みました'); }
+  catch(e){ toast('サンプルを読めませんでした（ファイル直開きでは読めません）'); }
+};
+$('#bNew').onclick = () => { if (!confirm('今の編集内容を消して新規作成しますか？\n（必要なら先に書き出してください）')) return; D = newScenario(); save(); renderAll(); };
+
+/* ---------- テストプレイ ---------- */
+function play(from){
+  try { localStorage.setItem(LS + 'preview', JSON.stringify(D)); } catch(e){ return toast('テストプレイ用の保存に失敗しました'); }
+  window.open('index.html?preview=1' + (from ? '&from=' + from : ''), '_blank');
+}
+$('#bPlay').onclick = () => play(0);
+
+/* ---------- タブ ---------- */
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.sec').forEach(s => s.classList.toggle('on', s.id === 'sec-' + b.dataset.tab));
+  if (b.dataset.tab === 'steps') renderSteps();
+  scrollTo(0, 0);
+});
+
+function renderAll(){ renderSteps(); renderChars(); renderBgs(); renderMeta(); $('#hTitle').textContent = D.title || 'シナリオエディタ'; }
+renderAll();
+})();
+</script>
+</body>
+</html>
