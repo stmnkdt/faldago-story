@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 760" width="400" height="760">
+<g stroke-linejoin="round">
+<circle cx="200" cy="282" r="120" fill="#3b2547"/>
+<path d="M40 760 Q44 560 120 520 Q160 500 200 500 Q240 500 280 520 Q356 560 360 760 Z" fill="#7a3b2e" stroke="#2b2b2b" stroke-width="4"/>
+<path d="M150 512 L200 600 L250 512" fill="none" stroke="#3d1f18" stroke-width="10" stroke-linecap="round"/>
+<rect x="172" y="410" width="56" height="100" rx="20" fill="#a77452" stroke="#2b2b2b" stroke-width="4"/>
+<ellipse cx="200" cy="310" rx="112" ry="120" fill="#a77452" stroke="#2b2b2b" stroke-width="4"/>
+<ellipse cx="160" cy="316" rx="9" ry="13" fill="#3a2a2a"/><ellipse cx="240" cy="316" rx="9" ry="13" fill="#3a2a2a"/><circle cx="163" cy="311" r="3" fill="#fff"/><circle cx="243" cy="311" r="3" fill="#fff"/><path d="M184 358 Q200 368 216 358" stroke="#3a2a2a" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M88 285 Q88 172 200 166 Q312 172 312 285 Q296 220 256 212 Q228 238 200 222 Q170 240 144 212 Q104 222 88 285 Z" fill="#3b2547" stroke="#24152d" stroke-width="3"/>
+</g>
+<g font-family="Hiragino Sans, Noto Sans JP, sans-serif" text-anchor="middle">
+<rect x="96" y="536" width="208" height="72" rx="14" fill="#000" opacity=".45"/>
+<text x="200" y="570" font-size="28" font-weight="700" fill="#fff">ロムド・通常</text>
+<text x="200" y="598" font-size="18" fill="#ddd">仮画像</text>
+</g>
+</svg>
